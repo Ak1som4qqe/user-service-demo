@@ -22,6 +22,8 @@ public class UsersController : ControllerBase
         if (string.IsNullOrWhiteSpace(request.FullName))
             return BadRequest("FullName is required");
 
+        Console.WriteLine($"[register] attempt for {request.Email}");
+
         var dto = await _users.RegisterAsync(request, ct);
         return Ok(dto); // ответ: { id, email, fullName }
     }
