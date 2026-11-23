@@ -7,9 +7,6 @@ namespace UserService.Api;
 [Route("api/users")]
 public class UsersController : ControllerBase
 {
-    private readonly IUserService _users;
-    public UsersController(IUserService users) => _users = users;
-
     [HttpPost("register")]
     public async Task<ActionResult<UserDto>> Register(
         [FromBody] RegisterRequestDTO request, CancellationToken ct)
@@ -27,4 +24,7 @@ public class UsersController : ControllerBase
         var dto = await _users.RegisterAsync(request, ct);
         return Ok(dto); // ответ: { id, email, fullName }
     }
+
+    private readonly IUserService _users;
+    public UsersController(IUserService users) => _users = users;
 }

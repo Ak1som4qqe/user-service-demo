@@ -35,43 +35,7 @@ var dto = await _users.RegisterAsync(request, ct);
 return Ok(dto); // ответ: { id, email, fullName }
 ```
 
-## 2. Ошибка в UsersController.cs
-
-Проблема: поле _users и конструктор были объявлены после метода Register, который их использует
-
-Что было:
-```csharp
-public class UsersController : ControllerBase
-{
-    [HttpPost("register")]
-    public async Task<ActionResult<UserDto>> Register(...)
-    {
-        var dto = await _users.RegisterAsync(request, ct); // Ошибка: _users еще не объявлен
-        return Ok(dto);
-    }
-
-    private readonly IUserService _users;  // Объявление после использования
-    public UsersController(IUserService users) => _users = users;
-}
-```
-
-Как правильно:
-```csharp
-public class UsersController : ControllerBase
-{
-    private readonly IUserService _users;
-    public UsersController(IUserService users) => _users = users;
-
-    [HttpPost("register")]
-    public async Task<ActionResult<UserDto>> Register(...)
-    {
-        var dto = await _users.RegisterAsync(request, ct);
-        return Ok(dto);
-    }
-}
-```
-
-## 3. Ошибка в клиенте user_client.py
+## 2. Ошибка в клиенте user_client.py
 
 Проблема: клиент не соответствует API. Бэкенд теперь требует поле fullName и возвращает его в ответе, а клиент его не отправляет и не ожидает
 
