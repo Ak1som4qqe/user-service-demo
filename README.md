@@ -70,3 +70,29 @@ public class UsersController : ControllerBase
     }
 }
 ```
+
+## 2. Ошибка в клиенте (client.py)
+
+Проблема: клиент не соответствует API. Бэкенд теперь требует поле fullName и возвращает его в ответе, а клиент его не отправляет и не ожидает
+
+Что было:
+```python
+EXPECTED = ("id", "email")
+
+def register(email: str, password: str) -> dict | None:
+    payload = {"email": email, "password": password}
+    ...
+
+r = register("student@example.com", "password123")
+```
+
+Как правильно:
+```python
+EXPECTED = ("id", "email", "fullName")
+
+def register(email: str, password: str, full_name: str) -> dict | None:
+    payload = {"email": email, "password": password, "fullName": full_name}
+    ...
+
+r = register("student@example.com", "password123", "Ivan Petrov")
+```
