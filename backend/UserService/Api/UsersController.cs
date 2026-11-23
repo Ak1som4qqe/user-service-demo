@@ -7,22 +7,22 @@ namespace UserService.Api;
 [Route("api/users")]
 public class UsersController : ControllerBase
 {
+    private readonly IUserService _users;
+    public UsersController(IUserService users) => _users = users;
+
     [HttpPost("register")]
     public async Task<ActionResult<UserDto>> Register(
         [FromBody] RegisterRequestDTO request, CancellationToken ct)
     {
 
         if (string.IsNullOrWhiteSpace(request.Email))
-            throw new ArgumentException("Email is required");
-        if (request.Password is { Length: < 8 })
-            throw new ArgumentException("Password too short");
-
-        Console.WriteLine($"[register] attempt for {request.Email}");
+            return BadRequest("Email is required");
+        if (string.IsNullOrEmpty(request.Password) || request.Password.Length < 8)
+            return BadRequest("Password too short");
+        if (string.IsNullOrWhiteSpace(request.FullName))
+            return BadRequest("FullName is required");
 
         var dto = await _users.RegisterAsync(request, ct);
-        return Ok(dto); // ответ: { id, email }
+        return Ok(dto); // ответ: { id, email, fullName }
     }
-
-    private readonly IUserService _users;
-    public UsersController(IUserService users) => _users = users;
 }
